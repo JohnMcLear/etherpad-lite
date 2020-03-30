@@ -233,7 +233,22 @@ exports.indentationOnNewLine = true;
 /*
  * log4js appender configuration
  */
-exports.logconfig = { appenders: [{ type: "console" }]};
+// exports.logconfig = { appenders: [{ type: "console" }]};
+exports.logconfig = {
+  appenders: {
+    out: { type: 'console' },
+    task: {
+      type: 'dateFile',
+      filename: 'logs/task',
+      pattern: '-dd.log',
+      alwaysIncludePattern: true
+    }
+  },
+  categories: {
+    default: { appenders: [ 'out' ], level: 'info' },
+    task: { appenders: [ 'task' ], level: 'info' }
+  }
+}
 
 /*
  * Session Key, do not sure this.
@@ -589,9 +604,9 @@ exports.reloadSettings = function reloadSettings() {
   storeSettings(credentials);
 
   log4js.configure(exports.logconfig);//Configure the logging appenders
-  log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
+  // log4js.setGlobalLogLevel(exports.loglevel);//set loglevel
   process.env['DEBUG'] = 'socket.io:' + exports.loglevel; // Used by SocketIO for Debug
-  log4js.replaceConsole();
+  // log4js.replaceConsole();
 
   if (!exports.skinName) {
     console.warn(`No "skinName" parameter found. Please check out settings.json.template and update your settings.json. Falling back to the default "no-skin".`);

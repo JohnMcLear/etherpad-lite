@@ -25,7 +25,12 @@ var log4js = require('log4js')
   , NodeVersion = require('./utils/NodeVersion')
   ;
 
-log4js.replaceConsole();
+const logger = log4js.getLogger('console');
+console.log = logger.info.bind(logger);
+console.info = logger.info.bind(logger);
+console.debug = logger.info.bind(logger);
+console.warn = logger.info.bind(logger);
+console.error = logger.info.bind(logger);
 
 /*
  * early check for version compatibility before calling
