@@ -447,7 +447,12 @@ function compressCSS(filename, content, callback)
      *    "content" argument, but we have to wrap the absolute path to the CSS
      *    in an array and ask the library to read it by itself.
      */
-    new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
+    var base = path.join(ROOT_DIR, path.dirname(filename));
+
+    new CleanCSS({
+      rebase: true,
+      rebaseTo: base
+    }).minify([absPath], function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);
