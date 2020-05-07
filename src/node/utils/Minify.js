@@ -446,8 +446,22 @@ function compressCSS(filename, content, callback)
      *    relativeTo parameter, and thus we cannot use our already loaded
      *    "content" argument, but we have to wrap the absolute path to the CSS
      *    in an array and ask the library to read it by itself.
+     *    In Etherpad 1.8.3 proxy rewritten paths were broken.
+     *    To fix this we do arbitrary transforms of paths that
+     *    are 3 folders deep.
      */
-    new CleanCSS({rebase: false}).minify([absPath], function (errors, minified) {
+
+     new CleanCSS({rebase: false,
+       level:{
+         1: {
+           transform: function (propertyName, propertyValue, selector /* `selector` available since 4.2.0-pre */) {
+             if (propertyName == 'src' && propertyValue.indexOf('../../../') > -1) {
+               return propertyValue.replace('../../../', '../../');
+             }
+           }
+         }
+       }
+     }).minify([absPath], function (errors, minified) {
       if (errors) {
         // on error, just yield the un-minified original, but write a log message
         console.error(`CleanCSS.minify() returned an error on ${filename} (${absPath}): ${errors}`);
