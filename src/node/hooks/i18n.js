@@ -3,7 +3,7 @@ var languages = require('languages4translatewiki')
   , path = require('path')
   , _ = require('underscore')
   , npm = require('npm')
-  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugins.js').plugins
+  , plugins = require('ep_etherpad-lite/static/js/pluginfw/plugin_defs.js').plugins
   , semver = require('semver')
   , existsSync = require('../utils/path_exists')
   , settings = require('../utils/Settings')
@@ -50,7 +50,13 @@ function getAllLocales() {
     locales[langcode]={};
 
     files.forEach(function(file) {
-     var fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+      let fileContents;
+      try {
+        fileContents = JSON.parse(fs.readFileSync(file,'utf8'));
+      } catch (err) {
+        console.error(`failed to read JSON file ${file}: ${err}`);
+        throw err;
+      }
       _.extend(locales[langcode], fileContents);
     });
   });

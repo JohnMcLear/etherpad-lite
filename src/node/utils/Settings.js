@@ -194,11 +194,6 @@ exports.requireSession = false;
 exports.editOnly = false;
 
 /**
- * A flag that bypasses password prompts for users with valid sessions
- */
-exports.sessionNoPassword = false;
-
-/**
  * Max age that responses will have (affects caching layer).
  */
 exports.maxAge = 1000*60*60*6; // 6 hours
@@ -267,6 +262,24 @@ exports.sessionKey = false;
  * Trust Proxy, whether or not trust the x-forwarded-for header.
  */
 exports.trustProxy = false;
+
+/*
+ * Settings controlling the session cookie issued by Etherpad.
+ */
+exports.cookie = {
+  /*
+   * Value of the SameSite cookie property. "Lax" is recommended unless
+   * Etherpad will be embedded in an iframe from another site, in which case
+   * this must be set to "None". Note: "None" will not work (the browser will
+   * not send the cookie to Etherpad) unless https is used to access Etherpad
+   * (either directly or via a reverse proxy with "trustProxy" set to true).
+   *
+   * "Strict" is not recommended because it has few security benefits but
+   * significant usability drawbacks vs. "Lax". See
+   * https://stackoverflow.com/q/41841880 for discussion.
+   */
+  sameSite: 'Lax',
+};
 
 /*
  * This setting is used if you need authentication and/or
@@ -366,20 +379,6 @@ exports.commitRateLimiting = {
  * File size is specified in bytes. Default is 50 MB.
  */
 exports.importMaxFileSize = 50 * 1024 * 1024;
-
-
-/*
- * From Etherpad 1.8.3 onwards import was restricted to authors who had
- * content within the pad.
- *
- * This setting will override that restriction and allow any user to import
- * without the requirement to add content to a pad.
- *
- * This setting is useful for when you use a plugin for authentication so you
- * can already trust each user.
- */
-exports.allowAnyoneToImport = false,
-
 
 // checks if abiword is avaiable
 exports.abiwordAvailable = function()

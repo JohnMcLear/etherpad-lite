@@ -155,6 +155,15 @@ describe("the test helper", function(){
       });
     });
 
+    it('rejects if the predicate throws', async function() {
+      let err;
+      await helper.waitFor(() => { throw new Error('test exception'); })
+          .fail(() => {}) // Suppress the redundant uncatchable exception.
+          .catch((e) => { err = e; });
+      expect(err).to.be.an(Error);
+      expect(err.message).to.be('test exception');
+    });
+
     describe("returns a deferred object", function(){
       it("it calls done after success", function(done){
         helper.waitFor(function(){
@@ -183,6 +192,57 @@ describe("the test helper", function(){
           return false;
         },100);
       });
+    });
+
+    describe('checks first then sleeps', function() {
+      it('resolves quickly if the predicate is immediately true', async function() {
+        const before = Date.now();
+        await helper.waitFor(() => true, 1000, 900);
+        expect(Date.now() - before).to.be.lessThan(800);
+      });
+
+      it('polls exactly once if timeout < interval', async function() {
+        let calls = 0;
+        await helper.waitFor(() => { calls++; }, 1, 1000)
+            .fail(() => {}) // Suppress the redundant uncatchable exception.
+            .catch(() => {}); // Don't throw an exception -- we know it rejects.
+        expect(calls).to.be(1);
+      });
+
+      it('resolves if condition is immediately true even if timeout is 0', async function() {
+        await helper.waitFor(() => true, 0);
+      });
+    });
+  });
+
+  describe('the waitForPromise method', function() {
+    it('returns a Promise', async function() {
+      expect(helper.waitForPromise(() => true)).to.be.a(Promise);
+    });
+
+    it('takes a timeout and waits long enough', async function() {
+      this.timeout(2000);
+      const startTime = Date.now();
+      let rejected;
+      await helper.waitForPromise(() => false, 1500)
+          .catch(() => { rejected = true; });
+      expect(rejected).to.be(true);
+      const duration = Date.now() - startTime;
+      expect(duration).to.be.greaterThan(1490);
+    });
+
+    it('takes an interval and checks on every interval', async function() {
+      this.timeout(4000);
+      let checks = 0;
+      let rejected;
+      await helper.waitForPromise(() => { checks++; return false; }, 2000, 100)
+          .catch(() => { rejected = true; });
+      expect(rejected).to.be(true);
+       // `checks` is expected to be 20 or 21: one at the beginning, plus 19 or 20 more depending on
+       // whether it's the timeout or the final poll that wins at 2000ms. Margin is added to reduce
+       // flakiness on slow test machines.
+      expect(checks).to.be.greaterThan(17);
+      expect(checks).to.be.lessThan(24);
     });
   });
 

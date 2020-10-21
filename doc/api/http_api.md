@@ -526,6 +526,16 @@ copies a pad with full history and chat. If force is true and the destination pa
   * `{code: 0, message:"ok", data: null}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
+#### copyPadWithoutHistory(sourceID, destinationID[, force=false])
+* API >= 1.2.15
+
+copies a pad without copying the history and chat. If force is true and the destination pad exists, it will be overwritten.
+Note that all the revisions will be lost! In most of the cases one should use `copyPad` API instead.
+
+*Example returns:*
+* `{code: 0, message:"ok", data: null}`
+* `{code: 1, message:"padID does not exist", data: null}`
+
 #### movePad(sourceID, destinationID[, force=false])
  * API >= 1.2.8
 
@@ -569,24 +579,6 @@ return true of false
 
 *Example returns:*
   * `{code: 0, message:"ok", data: {publicStatus: true}}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
-#### setPassword(padID, password)
- * API >= 1
-
-returns ok or an error message
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: null}`
-  * `{code: 1, message:"padID does not exist", data: null}`
-
-#### isPasswordProtected(padID)
- * API >= 1
-
-returns true or false
-
-*Example returns:*
-  * `{code: 0, message:"ok", data: {passwordProtection: true}}`
   * `{code: 1, message:"padID does not exist", data: null}`
 
 #### listAuthorsOfPad(padID)

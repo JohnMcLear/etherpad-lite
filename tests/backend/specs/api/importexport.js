@@ -5,18 +5,12 @@
  * TODO: unify those two files, and merge in a single one.
  */
 
-const assert = require('assert');
+const common = require('../../common');
 const supertest = require(__dirname+'/../../../../src/node_modules/supertest');
-const fs = require('fs');
 const settings = require(__dirname+'/../../../../tests/container/loadSettings.js').loadSettings();
 const api = supertest('http://'+settings.ip+":"+settings.port);
-const path = require('path');
-const async = require(__dirname+'/../../../../src/node_modules/async');
 
-var filePath = path.join(__dirname, '../../../../APIKEY.txt');
-
-var apiKey = fs.readFileSync(filePath,  {encoding: 'utf-8'});
-apiKey = apiKey.replace(/\n$/, "");
+const apiKey = common.apiKey;
 var apiVersion = 1;
 var lastEdited = "";
 
@@ -62,38 +56,39 @@ var testImports = {
   */
 }
 
-Object.keys(testImports).forEach(function (testName) {
-  var testPadId = makeid();
-  test = testImports[testName];
-  describe('createPad', function(){
-    it('creates a new Pad', function(done) {
-      api.get(endPoint('createPad')+"&padID="+testPadId)
-      .expect(function(res){
-        if(res.body.code !== 0) throw new Error("Unable to create new Pad");
-      })
-      .expect('Content-Type', /json/)
-      .expect(200, done)
-    });
-  })
+describe(__filename, function() {
+  Object.keys(testImports).forEach(function(testName) {
+    var testPadId = makeid();
+    test = testImports[testName];
+    describe('createPad', function() {
+      it('creates a new Pad', function(done) {
+        api.get(endPoint('createPad') + "&padID=" + testPadId)
+            .expect(function(res) {
+              if(res.body.code !== 0) throw new Error("Unable to create new Pad");
+            })
+            .expect('Content-Type', /json/)
+            .expect(200, done)
+      });
+    })
 
-  describe('setHTML', function(){
-    it('Sets the HTML', function(done) {
-      api.get(endPoint('setHTML')+"&padID="+testPadId+"&html="+test.input)
-      .expect(function(res){
-        if(res.body.code !== 0) throw new Error("Error:"+testName)
-      })
-      .expect('Content-Type', /json/)
-      .expect(200, done)
-    });
-  })
+    describe('setHTML', function() {
+      it('Sets the HTML', function(done) {
+        api.get(endPoint('setHTML') + "&padID=" + testPadId + "&html=" + test.input)
+            .expect(function(res) {
+              if(res.body.code !== 0) throw new Error("Error:" + testName)
+            })
+            .expect('Content-Type', /json/)
+            .expect(200, done)
+      });
+    })
 
-  describe('getHTML', function(){
-    it('Gets back the HTML of a Pad', function(done) {
-      api.get(endPoint('getHTML')+"&padID="+testPadId)
-      .expect(function(res){
-        var receivedHtml = res.body.data.html;
-        if (receivedHtml !== test.expectedHTML) {
-          throw new Error(`HTML received from export is not the one we were expecting.
+    describe('getHTML', function() {
+      it('Gets back the HTML of a Pad', function(done) {
+        api.get(endPoint('getHTML') + "&padID=" + testPadId)
+            .expect(function(res) {
+              var receivedHtml = res.body.data.html;
+              if (receivedHtml !== test.expectedHTML) {
+                throw new Error(`HTML received from export is not the one we were expecting.
              Test Name:
              ${testName}
 
@@ -105,20 +100,20 @@ Object.keys(testImports).forEach(function (testName) {
 
              Which is a different version of the originally imported one:
              ${test.input}`);
-        }
-      })
-      .expect('Content-Type', /json/)
-      .expect(200, done)
-    });
-  })
+              }
+            })
+            .expect('Content-Type', /json/)
+            .expect(200, done)
+      });
+    })
 
-  describe('getText', function(){
-    it('Gets back the Text of a Pad', function(done) {
-      api.get(endPoint('getText')+"&padID="+testPadId)
-      .expect(function(res){
-        var receivedText = res.body.data.text;
-        if (receivedText !== test.expectedText) {
-          throw new Error(`Text received from export is not the one we were expecting.
+    describe('getText', function() {
+      it('Gets back the Text of a Pad', function(done) {
+        api.get(endPoint('getText') + "&padID=" + testPadId)
+            .expect(function(res) {
+              var receivedText = res.body.data.text;
+              if (receivedText !== test.expectedText) {
+                throw new Error(`Text received from export is not the one we were expecting.
              Test Name:
              ${testName}
 
@@ -130,12 +125,13 @@ Object.keys(testImports).forEach(function (testName) {
 
              Which is a different version of the originally imported one:
              ${test.input}`);
-        }
-      })
-      .expect('Content-Type', /json/)
-      .expect(200, done)
-    });
-  })
+              }
+            })
+            .expect('Content-Type', /json/)
+            .expect(200, done)
+      });
+    })
+  });
 });
 
 

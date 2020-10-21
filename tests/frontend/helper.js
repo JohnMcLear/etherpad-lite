@@ -1,11 +1,9 @@
 var helper = {};
 
 (function(){
-  var $iframeContainer, $iframe, jsLibraries = {};
+  var $iframe, jsLibraries = {};
 
   helper.init = function(cb){
-    $iframeContainer = $("#iframe-container");
-
     $.get('/static/js/jquery.js').done(function(code){
       // make sure we don't override existing jquery
       jsLibraries["jquery"] = "if(typeof $ === 'undefined') {\n" + code + "\n}";
@@ -90,6 +88,11 @@ var helper = {};
   }
   helper.evtType = evtType;
 
+  // @todo needs fixing asap
+  // newPad occasionally timeouts, might be a problem with ready/onload code during page setup
+  // This ensures that tests run regardless of this problem
+  helper.retry = 0
+
   helper.newPad = function(cb, padName){
     //build opts object
     var opts = {clearCookies: true}
@@ -113,68 +116,72 @@ var helper = {};
       padName = "FRONTEND_TEST_" + helper.randomString(20);
     $iframe = $("<iframe src='/p/" + padName + (encodedParams || '') + "'></iframe>");
 
+    // needed for retry
+    let origPadName = padName;
+
     //clean up inner iframe references
     helper.padChrome$ = helper.padOuter$ = helper.padInner$ = null;
 
-    //clean up iframes properly to prevent IE from memoryleaking
-    $iframeContainer.find("iframe").purgeFrame().done(function(){
-      $iframeContainer.append($iframe);
-      $iframe.one('load', function(){
-        helper.padChrome$ = getFrameJQuery(                $('#iframe-container iframe'));
-        if (opts.clearCookies) {
-          helper.clearPadPrefCookie();
-        }
-        if (opts.padPrefs) {
-          helper.setPadPrefCookie(opts.padPrefs);
-        }
-        helper.waitFor(function(){
-          return !$iframe.contents().find("#editorloadingbox").is(":visible");
-        }, 50000).done(function(){
-          helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
-          helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
+    //remove old iframe
+    $("#iframe-container iframe").remove();
+    //set new iframe
+    $("#iframe-container").append($iframe);
+    $iframe.one('load', function(){
+      helper.padChrome$ = getFrameJQuery($('#iframe-container iframe'));
+      if (opts.clearCookies) {
+        helper.clearPadPrefCookie();
+      }
+      if (opts.padPrefs) {
+        helper.setPadPrefCookie(opts.padPrefs);
+      }
+      helper.waitFor(function(){
+        return !$iframe.contents().find("#editorloadingbox").is(":visible");
+      }, 10000).done(function(){
+        helper.padOuter$  = getFrameJQuery(helper.padChrome$('iframe[name="ace_outer"]'));
+        helper.padInner$  = getFrameJQuery( helper.padOuter$('iframe[name="ace_inner"]'));
 
-          //disable all animations, this makes tests faster and easier
-          helper.padChrome$.fx.off = true;
-          helper.padOuter$.fx.off = true;
-          helper.padInner$.fx.off = true;
+        //disable all animations, this makes tests faster and easier
+        helper.padChrome$.fx.off = true;
+        helper.padOuter$.fx.off = true;
+        helper.padInner$.fx.off = true;
 
-          opts.cb();
-        }).fail(function(){
+        opts.cb();
+      }).fail(function(){
+        if (helper.retry > 3) {
           throw new Error("Pad never loaded");
-        });
+        }
+        helper.retry++;
+        helper.newPad(cb,origPadName);
       });
     });
 
     return padName;
   }
 
-  helper.waitFor = function(conditionFunc, _timeoutTime, _intervalTime){
-    var timeoutTime = _timeoutTime || 1900;
-    var intervalTime = _intervalTime || 10;
-
+  helper.waitFor = function(conditionFunc, timeoutTime = 1900, intervalTime = 10) {
     var deferred = $.Deferred();
 
-    var _fail = deferred.fail;
+    const _fail = deferred.fail.bind(deferred);
     var listenForFail = false;
-    deferred.fail = function(){
+    deferred.fail = (...args) => {
       listenForFail = true;
-      _fail.apply(this, arguments);
-    }
+      return _fail(...args);
+    };
 
-    var intervalCheck = setInterval(function(){
-      var passed = false;
-
-      passed = conditionFunc();
-
-      if(passed){
-        clearInterval(intervalCheck);
-        clearTimeout(timeout);
-
+    const check = () => {
+      try {
+        if (!conditionFunc()) return;
         deferred.resolve();
+      } catch (err) {
+        deferred.reject(err);
       }
-    }, intervalTime);
+      clearInterval(intervalCheck);
+      clearTimeout(timeout);
+    };
 
-    var timeout = setTimeout(function(){
+    const intervalCheck = setInterval(check, intervalTime);
+
+    const timeout = setTimeout(() => {
       clearInterval(intervalCheck);
       var error = new Error("wait for condition never became true " + conditionFunc.toString());
       deferred.reject(error);
@@ -184,8 +191,22 @@ var helper = {};
       }
     }, timeoutTime);
 
+    // Check right away to avoid an unnecessary sleep if the condition is already true.
+    check();
+
     return deferred;
-  }
+  };
+
+  /**
+   * Same as `waitFor` but using Promises
+   *
+   */
+  helper.waitForPromise = async function(...args) {
+    // Note: waitFor() has a strange API: On timeout it rejects, but it also throws an uncatchable
+    // exception unless .fail() has been called. That uncatchable exception is disabled here by
+    // passing a no-op function to .fail().
+    return await this.waitFor(...args).fail(() => {});
+  };
 
   helper.selectLines = function($startLine, $endLine, startOffset, endOffset){
     // if no offset is provided, use beginning of start line and end of end line
@@ -249,16 +270,4 @@ var helper = {};
   /* Ensure console.log doesn't blow up in IE, ugly but ok for a test framework imho*/
   window.console = window.console || {};
   window.console.log = window.console.log || function(){}
-
-  //force usage of callbacks in it
-  var _it = it;
-  it = function(name, func){
-    if(func && func.length !== 1){
-      func = function(){
-        throw new Error("Please use always a callback with it() - " + func.toString());
-      }
-    }
-
-    _it(name, func);
-  }
 })()

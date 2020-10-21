@@ -26,7 +26,7 @@ var fs = require('fs');
 var StringDecoder = require('string_decoder').StringDecoder;
 var CleanCSS = require('clean-css');
 var path = require('path');
-var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugins");
+var plugins = require("ep_etherpad-lite/static/js/pluginfw/plugin_defs");
 var RequireKernel = require('etherpad-require-kernel');
 var urlutil = require('url');
 var mime = require('mime-types')
@@ -44,12 +44,13 @@ var threadsPool = Threads.Pool(function () {
 }, 2)
 
 var LIBRARY_WHITELIST = [
-      'async'
-    , 'security'
-    , 'tinycon'
-    , 'underscore'
-    , 'unorm'
-    ];
+  'async',
+  'js-cookie',
+  'security',
+  'tinycon',
+  'underscore',
+  'unorm',
+];
 
 // Rewrite tar to include modules with no extensions and proper rooted paths.
 var LIBRARY_PREFIX = 'ep_etherpad-lite/static/js';
@@ -418,3 +419,7 @@ exports.minify = minify;
 
 exports.requestURI = requestURI;
 exports.requestURIs = requestURIs;
+
+exports.shutdown = async (hookName, context) => {
+  await threadsPool.terminate();
+};

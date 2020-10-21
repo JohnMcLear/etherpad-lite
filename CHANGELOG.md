@@ -1,4 +1,53 @@
 # Develop -- TODO Change to 1.8.x.
+### Compatibility-breaking changes
+* **IMPORTANT:** It is no longer possible to protect a group pad with a
+  password. All API calls to `setPassword` or `isPasswordProtected` will fail.
+  Existing group pads that were previously password protected will no longer be
+  password protected. If you need fine-grained access control, you can restrict
+  API session creation in your frontend service, or you can use plugins.
+* Authorization failures now return 403 by default instead of 401
+* The `authorize` hook is now only called after successful
+  authentication. Use the new `preAuthorize` hook if you need to bypass
+  authentication
+* The `authFailure` hook is deprecated; use the new
+  `authnFailure` and `authzFailure` hooks instead
+* The format of `ENTER`, `CREATE`, and `LEAVE` log messages has changed
+### Notable new features
+* Users can now import without creating and editing the pad first
+* Added a new `readOnly` user setting that makes it possible to create users in
+  `settings.json` that can read pads but not create or modify them
+* Added a new `canCreate` user setting that makes it possible to create users in
+  `settings.json` that can modify pads but not create them
+* The `authorize` hook now accepts `readOnly` to grant read-only access to a pad
+* The `authorize` hook now accepts `modify` to grant modify-only (creation
+  prohibited) access to a pad
+* All authentication successes and failures are now logged
+* Added a new `cookie.sameSite` setting that makes it possible to enable
+  authentication when Etherpad is embedded in an iframe from another site
+### Notable fixes
+* Fixed rate limit accounting when Etherpad is behind a reverse proxy
+* Fixed typos that prevented access to pads via an HTTP API session
+* Fixed authorization failures for pad URLs containing a percent-encoded
+  character
+* Fixed exporting of read-only pads
+### Minor changes
+* Temporary disconnections no longer force a full page refresh
+* Toolbar layout for narrow screens is improved
+* Fixed `SameSite` cookie attribute for the `language`,
+  `token`, and `pref` cookies
+* Fixed superfluous database accesses when deleting a pad
+* Expanded test coverage.
+
+# 1.8.6
+* IMPORTANT: This fixes a severe problem with postgresql in 1.8.5
+* SECURITY: Fix authentication and authorization bypass vulnerabilities
+* API: Update version to 1.2.15
+* FEATURE: Add copyPadWithoutHistory API (#4295)
+* FEATURE: Package more asset files to save http requests (#4286)
+* MINOR: Improve UI when reconnecting
+* TESTS: Improve tests
+
+# 1.8.5
 * IMPORTANT DROP OF SUPPORT: Drop support for IE.  Browsers now need async/await.
 * IMPORTANT SECURITY: Rate limit Commits when env=production
 * SECURITY: Non completed uploads no longer crash Etherpad
@@ -30,6 +79,7 @@
 * MINOR: Improved CSS anomation through prefers-reduced-motion
 * PERFORMANCE: Use workers (where possible) to minify CSS/JS on first page request.  This improves initial startup times.
 * PERFORMANCE: Cache EJS files improving page load speed when maxAge > 0.
+* PERFORMANCE: Fix performance for large pads
 * TESTS: Additional test coverage for OL/LI/Import/Export
 * TESTS: Include Simulated Load Testing in CI.
 * TESTS: Include content collector tests to test contentcollector.js logic external to pad dependents.

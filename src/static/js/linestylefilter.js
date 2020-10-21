@@ -59,11 +59,9 @@ linestylefilter.getLineStyleFilter = function(lineLength, aline, textAndClassFun
 {
 
   // Plugin Hook to add more Attrib Classes
-  hooks.aCallAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES, function(err, ATTRIB_CLASSES){
-    if(ATTRIB_CLASSES.length >= 1){
-      linestylefilter.ATTRIB_CLASSES = ATTRIB_CLASSES[0];
-    }
-  });
+  for (const attribClasses of hooks.callAll('aceAttribClasses', linestylefilter.ATTRIB_CLASSES)) {
+    Object.assign(linestylefilter.ATTRIB_CLASSES, attribClasses);
+  }
 
   if (lineLength == 0) return textAndClassFunc;
 

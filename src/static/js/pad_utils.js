@@ -39,49 +39,6 @@ function randomString(len)
   return randomstring;
 }
 
-function createCookie(name, value, days, path){ /* Used by IE */
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    var expires = "; expires=" + date.toGMTString();
-  }
-  else{
-    var expires = "";
-  }
-
-  if(!path){ // IF the Path of the cookie isn't set then just create it on root
-    path = "/";
-  }
-
-  //Check if we accessed the pad over https
-  var secure = window.location.protocol == "https:" ? ";secure" : "";
-  var isHttpsScheme = window.location.protocol === "https:";
-  var sameSite = isHttpsScheme ?  ";sameSite=Strict": ";sameSite=Lax";
-
-  //Check if the browser is IE and if so make sure the full path is set in the cookie
-  if((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))){
-    document.cookie = name + "=" + value + expires + "; path=/" + secure + sameSite; /* Note this bodge fix for IE is temporary until auth is rewritten */
-  }
-  else{
-    document.cookie = name + "=" + value + expires + "; path=" + path + secure + sameSite;
-  }
-
-}
-
-function readCookie(name)
-{
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++)
-  {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
-
 var padutils = {
   escapeHtml: function(x)
   {
@@ -527,7 +484,6 @@ function setupGlobalExceptionHandler() {
     globalExceptionHandler = function test (msg, url, linenumber)
     {
       var errorId = randomString(20);
-      var userAgent = padutils.escapeHtml(navigator.userAgent);
 
       var msgAlreadyVisible = false;
       $('.gritter-item .error-msg').each(function() {
@@ -537,13 +493,19 @@ function setupGlobalExceptionHandler() {
       });
 
       if (!msgAlreadyVisible) {
-        errorMsg = "<b>Please press and hold Ctrl and press F5 to reload this page</b></br> \
-                    If the problem persists please send this error message to your webmaster: </br></br>\
-                    <div style='text-align:left; font-size: .8em'>\
-                    ErrorId: " + errorId + "<br>\
-                    URL: " + padutils.escapeHtml(window.location.href) + "<br>\
-                    UserAgent: " + userAgent + "<br>\
-                    <span class='error-msg'>"+ msg + "</span> in " + url + " at line " + linenumber + '</div>';
+        const txt = document.createTextNode.bind(document); // Convenience shorthand.
+        const errorMsg = [
+          $('<p>')
+              .append($('<b>').text('Please press and hold Ctrl and press F5 to reload this page')),
+          $('<p>')
+              .text('If the problem persists, please send this error message to your webmaster:'),
+          $('<div>').css('text-align', 'left').css('font-size', '.8em').css('margin-top', '1em')
+              .append(txt(`ErrorId: ${errorId}`)).append($('<br>'))
+              .append(txt(`URL: ${window.location.href}`)).append($('<br>'))
+              .append(txt(`UserAgent: ${navigator.userAgent}`)).append($('<br>'))
+              .append($('<b>').addClass('error-msg').text(msg)).append($('<br>'))
+              .append(txt(`at ${url} at line ${linenumber}`)).append($('<br>')),
+        ];
 
         $.gritter.add({
           title: "An error occurred",
@@ -555,7 +517,16 @@ function setupGlobalExceptionHandler() {
       }
 
       //send javascript errors to the server
-      var errObj = {errorInfo: JSON.stringify({errorId: errorId, msg: msg, url: window.location.href, linenumber: linenumber, userAgent: navigator.userAgent})};
+      var errObj = {
+        errorInfo: JSON.stringify({
+          errorId,
+          msg,
+          url: window.location.href,
+          source: url,
+          linenumber,
+          userAgent: navigator.userAgent,
+        }),
+      };
       var loc = document.location;
       var url = loc.protocol + "//" + loc.hostname + ":" + loc.port + "/" + loc.pathname.substr(1, loc.pathname.indexOf("/p/")) + "jserror";
 
@@ -571,7 +542,29 @@ padutils.setupGlobalExceptionHandler = setupGlobalExceptionHandler;
 
 padutils.binarySearch = require('./ace2_common').binarySearch;
 
+// https://stackoverflow.com/a/42660748
+function inThirdPartyIframe() {
+  try {
+    return (!window.top.location.hostname);
+  } catch (e) {
+    return true;
+  }
+}
+
+// This file is included from Node so that it can reuse randomString, but Node doesn't have a global
+// window object.
+if (typeof window !== 'undefined') {
+  exports.Cookies = require('js-cookie/src/js.cookie');
+  // Use `SameSite=Lax`, unless Etherpad is embedded in an iframe from another site in which case
+  // use `SameSite=None`. For iframes from another site, only `None` has a chance of working
+  // because the cookies are third-party (not same-site). Many browsers/users block third-party
+  // cookies, but maybe blocked is better than definitely blocked (which would happen with `Lax`
+  // or `Strict`). Note: `None` will not work unless secure is true.
+  //
+  // `Strict` is not used because it has few security benefits but significant usability drawbacks
+  // vs. `Lax`. See https://stackoverflow.com/q/41841880 for discussion.
+  exports.Cookies.defaults.sameSite = inThirdPartyIframe() ? 'None' : 'Lax';
+  exports.Cookies.defaults.secure = window.location.protocol === 'https:';
+}
 exports.randomString = randomString;
-exports.createCookie = createCookie;
-exports.readCookie = readCookie;
 exports.padutils = padutils;

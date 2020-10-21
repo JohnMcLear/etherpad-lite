@@ -1,13 +1,13 @@
 <%
   var settings = require("ep_etherpad-lite/node/utils/Settings")
-    , hooks = require('ep_etherpad-lite/static/js/pluginfw/hooks')
     , langs = require("ep_etherpad-lite/node/hooks/i18n").availableLangs
+    , pluginUtils = require('ep_etherpad-lite/static/js/pluginfw/shared')
     ;
 %>
 <!doctype html>
 
 <% e.begin_block("htmlHead"); %>
-<html class="<%=hooks.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
+<html class="<%=pluginUtils.clientPluginNames().join(' '); %> <%=settings.skinVariants%>">
 <% e.end_block(); %>
 
   <title><%=settings.title%></title>
@@ -91,17 +91,8 @@
       <div id="editorcontainer" class="editorcontainer"></div>
 
       <div id="editorloadingbox">
-        <div id="passwordRequired">
-          <p data-l10n-id="pad.passwordRequired">You need a password to access this pad</p>
-          <form class='passForm' method='POST'>
-            <input id='passwordinput' type='password' name='password'><input type='submit' value='Submit'>
-          </form>
-        </div>
         <div id="permissionDenied">
           <p data-l10n-id="pad.permissionDenied">You do not have permission to access this pad</p>
-        </div>
-        <div id="wrongPassword">
-          <p data-l10n-id="pad.wrongPassword">Your password was wrong</p>
         </div>
         <% e.begin_block("loading"); %>
         <p data-l10n-id="pad.loading" id="loading">Loading...</p>
@@ -195,7 +186,6 @@
                       </span>
                   </div>
               </form>
-              <div id="importmessagepermission" data-l10n-id="pad.impexp.permission"></div>
               <% e.end_block(); %>
           </div>
           <div id="exportColumn">
@@ -282,6 +272,11 @@
           <div class="rateLimited">
             <h1 data-l10n-id="pad.modals.rateLimited"></h1>
             <p data-l10n-id="pad.modals.rateLimited.explanation"></p>
+          </div>
+          <div class="rejected">
+            <h1 data-l10n-id="pad.modals.disconnected"></h1>
+            <h2 data-l10n-id="pad.modals.rejected.explanation"></h2>
+            <p data-l10n-id="pad.modals.rejected.cause"></p>
           </div>
           <div class="disconnected with_reconnect_timer">
             <% e.begin_block("disconnected"); %>
@@ -488,8 +483,6 @@
 
         plugins.baseURL = baseURL;
         plugins.update(function () {
-          hooks.plugins = plugins;
-
           // Call documentReady hook
           $(function() {
             hooks.aCallAll('documentReady');
