@@ -3,6 +3,7 @@
 		"authors": [
 			"Ajeje Brazorf",
 			"Albano",
+			"Ayub Abdulla",
 			"Beta16",
 			"Gianfranco",
 			"Jack",
@@ -47,6 +48,8 @@
 	"admin_settings.current_save.value": "Salva impostazioni",
 	"admin_settings.page-title": "Impostazioni - Etherpad",
 	"index.newPad": "Nuovo pad",
+	"index.settings": "Impostazioni",
+	"index.copyLink": "Copia collegamento",
 	"index.createOpenPad": "Apri pad per nome",
 	"index.openPad": "apri un Pad esistente col nome:",
 	"index.recentPads": "Pad recenti",

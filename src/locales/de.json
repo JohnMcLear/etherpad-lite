@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Bjarncraft",
+			"Brettchenweber",
 			"Dom",
 			"Justman10000",
 			"Killarnee",
@@ -56,7 +57,7 @@
 	"index.settings": "Einstellungen",
 	"index.transferSessionTitle": "Sitzung übertragen",
 	"index.receiveSessionTitle": "Sitzung empfangen",
-	"index.receiveSessionDescription": "Hier kannst du eine Etherpad-Sitzung aus einem anderen Browser oder Gerät empfangen. Bedenke allerdings, dass dadurch deine aktuelle Sitzung, falls vorhanden gelöscht wird.",
+	"index.receiveSessionDescription": "Hier kannst du eine Etherpad-Sitzung aus einem anderen Browser oder Gerät empfangen. Bedenke allerdings, dass dadurch deine aktuelle Sitzung, falls vorhanden, gelöscht wird.",
 	"index.transferSession": "1. Sitzung übertragen",
 	"index.transferSessionNow": "Jetzt übertragen",
 	"index.copyLink": "2. Link kopieren",
