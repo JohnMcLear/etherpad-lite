@@ -15,6 +15,7 @@
 	"admin_plugins.name": "नाम",
 	"admin_plugins.version": "संस्करण",
 	"index.newPad": "नयाँ प्याड",
+	"index.settings": "अभिरुचिहरू",
 	"index.createOpenPad": "नाम सहितको नयाँ प्याड सिर्जना गर्ने / खोल्ने :",
 	"pad.toolbar.bold.title": "मोटो (Ctrl-B)",
 	"pad.toolbar.italic.title": "ढल्के (Ctrl-I)",

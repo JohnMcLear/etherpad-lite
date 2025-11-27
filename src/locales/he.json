@@ -53,6 +53,7 @@
 	"index.copyLinkButton": "העתקת קישור ללוח הגזירים",
 	"index.transferToSystem": "3. העתקת הפעלה למערכת חדשה",
 	"index.transferToSystemDescription": "יש לפתוח את הקישור שהועתק בדפדפן או מכשיר היעד כדי להעביר את ההפעלה שלך.",
+	"index.transferSessionDescription": "אפשר להעביר את ההתחברות הנוכחית שלך לדפדפן או למכשיר בלחיצה על הכפתור שלהלן. הפעולה הזאת תעתיק את הקישור לדף שיעביר את ההפעלה שלך כשייפתח בדפדפן או מכשיר היעד.",
 	"index.createOpenPad": "פתיחת פנקס לפי שם",
 	"index.openPad": "פתיחת פנקס קיים עם השם:",
 	"index.recentPads": "פנקסים אחרונים",
