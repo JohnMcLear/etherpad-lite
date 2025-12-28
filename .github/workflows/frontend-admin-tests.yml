@@ -30,8 +30,8 @@ jobs:
           printf %s\\n '::set-output name=tunnel_id::${{ github.run_id }}-${{ github.run_number }}-${{ github.job }}-node${{ matrix.node }}'
       -
         name: Checkout repository
-        uses: actions/checkout@v5
-      - uses: actions/cache@v4
+        uses: actions/checkout@v6
+      - uses: actions/cache@v5
         name: Setup gnpm cache
         if: always()
         with:
@@ -48,7 +48,7 @@ jobs:
         with:
           version: 0.0.12
       - name: Cache playwright binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-cache
         with:
           path: |
@@ -141,7 +141,7 @@ jobs:
           gnpm exec playwright install --runtimeVersion="${{ matrix.node }}"
           gnpm exec playwright install-deps --runtimeVersion="${{ matrix.node }}"
           gnpm run test-admin --runtimeVersion="${{ matrix.node }}"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report-${{ matrix.node }}
