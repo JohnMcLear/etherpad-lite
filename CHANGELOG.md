@@ -5,6 +5,8 @@
 - Added native option to transfer your Etherpad session between browsers. If you use multiple browsers or different PC for Etherpad they are different sessions. Meaning typing on one PC and then switching to another one in the same pad will result in different authorship colors. With this new feature you can now transfer your session to another browser or PC. To do so, open the home page and click on the wheel icon in the top right corner. After that click through the first dialog prompting you to copy a code to your clipboard. On your second browser open the same dialog and switch to "Receive Session" tab. There you can paste the code you copied before and click on "Receive Session". After that your session is transferred, and you can continue editing with the same authorship color as before. Just be aware that you can't have two active sessions at once in a pad.
 - Updated to oidc provider v2.6.0 after resolving compatibility issues.
 
+🎉 For all the people celebrating: Have a happy and awesome new year! 🎉 There is something big on the horizon for Etherpad in 2026. Stay tuned!
+
 # 2.5.3
 
 ### Notable enhancements and fixes
