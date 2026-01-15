@@ -50,7 +50,7 @@
 	"admin_settings.current_save.value": "Зберегти налаштування",
 	"admin_settings.page-title": "Налаштування — Etherpad",
 	"index.newPad": "Створити",
-	"index.createOpenPad": "або створити/відкрити документ з назвою:",
+	"index.createOpenPad": "Відкрити документ з іменем",
 	"index.openPad": "відкрити наявний документ з назвою:",
 	"pad.toolbar.bold.title": "Напівжирний (Ctrl-B)",
 	"pad.toolbar.italic.title": "Курсив (Ctrl-I)",
