@@ -1,3 +1,15 @@
+# 2.6.1
+
+For those wondering where the new updates are and why it was very quite throughout the last 1 1/2 years – I've been working on a new implementation of Etherpad from scratch in Go. It's called Etherpad-Go and you can find it here: `https://github.com/ether/etherpad-go`
+and a short FAQ about it here: https://github.com/ether/etherpad-go/wiki/FAQ . I'd love to hear your feedback about it either on Discord or issue tracker. There is a README.md that explains how to get started and try it out and also the FAQ can be quite fruitful. Latest release can be found here: https://github.com/ether/etherpad-go/releases/tag/v0.0.4
+
+
+### Notable enhancements and fixes of this release
+
+- Minor fixes and improvements to the session transfer feature introduced in 2.6.0
+- Dependencies upgrades
+
+
 # 2.6.0
 
 ### Notable enhancements and fixes
