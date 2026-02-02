@@ -5,8 +5,10 @@
 # Author: muxator
 ARG BUILD_ENV=git
 
+ARG PnpmVersion=10.28.2
+
 FROM node:lts-alpine AS adminbuild
-RUN npm install -g pnpm@latest
+RUN npm install -g pnpm@${PnpmVersion}
 WORKDIR /opt/etherpad-lite
 COPY . .
 RUN pnpm install
@@ -100,7 +102,7 @@ RUN mkdir -p "${EP_DIR}" && chown etherpad:etherpad "${EP_DIR}"
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
 RUN  \
     mkdir -p /usr/share/man/man1 && \
-    npm install pnpm@latest -g  && \
+    npm install pnpm@${PnpmVersion} -g  && \
     apk update && apk upgrade && \
     apk add --no-cache \
         ca-certificates \
@@ -139,7 +141,7 @@ ARG ETHERPAD_LOCAL_PLUGINS_ENV=
 ARG ETHERPAD_GITHUB_PLUGINS=
 
 COPY --chown=etherpad:etherpad ./src/ ./src/
-COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/ templates/admin./src/templates/admin
+COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/templates/admin ./src/templates/admin
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/static/oidc ./src/static/oidc
 
 COPY --chown=etherpad:etherpad ./local_plugin[s] ./local_plugins/
