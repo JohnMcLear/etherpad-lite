@@ -1,6 +1,8 @@
 # Contributor Guidelines
 (Please talk to people on the mailing list before you change this page, see our section on [how to get in touch](https://github.com/ether/etherpad-lite#get-in-touch))
 
+**We have decided that LLM/Agent/AI contributions are fine as long as they are within the instructions set out by this document.**
+
 ## Pull requests
 
 * the commit series in the PR should be _linear_ (it **should not contain merge commits**). This is necessary because we want to be able to [bisect](https://en.wikipedia.org/wiki/Bisection_(software_engineering)) bugs easily. Rewrite history/perform a rebase if necessary
