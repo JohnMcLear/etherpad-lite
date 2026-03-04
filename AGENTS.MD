@@ -12,7 +12,7 @@ Etherpad is a real-time collaborative editor designed to be lightweight, scalabl
 - **Backend:** Express.js, Socket.io
 - **Frontend:** Legacy core (`src/static`), New UI (`ui/`), Admin UI (`admin/`)
 - **Build Tools:** Vite (for `ui` and `admin`), custom scripts in `bin/`
-- **Testing:** Vitest, Playwright, custom backend test suite
+- **Testing:** Mocha (Backend), Vitest, Playwright, custom backend test suite
 
 ## Directory Structure
 - `src/node/`: Backend logic, API, and database abstraction.
