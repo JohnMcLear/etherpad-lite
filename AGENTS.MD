@@ -6,7 +6,7 @@ Welcome to the Etherpad project. This guide provides essential context and instr
 Etherpad is a real-time collaborative editor designed to be lightweight, scalable, and highly extensible via plugins.
 
 ## Technical Stack
-- **Runtime:** Node.js (>= 20.0.0)
+- **Runtime:** Node.js
 - **Package Manager:** pnpm
 - **Languages:** TypeScript (primary), JavaScript, CSS, HTML
 - **Backend:** Express.js, Socket.io
