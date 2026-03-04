@@ -21,7 +21,7 @@ Etherpad is a real-time collaborative editor designed to be lightweight, scalabl
 - `admin/`: Modern React-based administration interface.
 - `bin/`: Utility and lifecycle scripts.
 - `doc/`: Documentation in Markdown and Adoc formats.
-- `tests/`: Test suites (backend, frontend, UI, admin).
+- `src/tests/`: Test suites (backend, frontend, UI, admin).
 - `var/`: Runtime data (logs, dirtyDB, etc. - ignored by git).
 - `local_plugins/`: Directory for developing and testing plugins locally.
 
