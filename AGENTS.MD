@@ -28,7 +28,7 @@ Etherpad is a real-time collaborative editor designed to be lightweight, scalabl
 ## Core Mandates & Conventions
 
 ### Coding Style
-- **Indentation:** 2 spaces for JS/TS/CSS; 4 spaces for HTML.
+- **Indentation:** 2 spaces for all files (JS/TS/CSS/HTML).
 - **No Tabs:** Use spaces only.
 - **Comments:** Provide clear comments for complex logic.
 - **Backward Compatibility:** Always ensure compatibility with older versions of the database and configuration files.
