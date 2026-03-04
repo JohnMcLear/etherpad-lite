@@ -49,7 +49,7 @@ Etherpad is a real-time collaborative editor designed to be lightweight, scalabl
 ## Key Concepts
 
 ### Easysync
-The real-time synchronization engine. It is complex; refer to `doc/easysync/` before modifying core synchronization logic.
+The real-time synchronization engine. It is complex; refer to `doc/public/easysync/` before modifying core synchronization logic.
 
 ### Plugin Framework
 Most functionality should be implemented as plugins (`ep_...`). Avoid modifying the core unless absolutely necessary.
