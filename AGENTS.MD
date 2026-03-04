@@ -1,9 +1,9 @@
-# Agent Guide - Etherpad Lite
+# Agent Guide - Etherpad
 
-Welcome to the Etherpad Lite project. This guide provides essential context and instructions for AI agents and developers to effectively contribute to the codebase.
+Welcome to the Etherpad project. This guide provides essential context and instructions for AI agents and developers to effectively contribute to the codebase.
 
 ## Project Overview
-Etherpad Lite is a real-time collaborative editor designed to be lightweight, scalable, and highly extensible via plugins.
+Etherpad is a real-time collaborative editor designed to be lightweight, scalable, and highly extensible via plugins.
 
 ## Technical Stack
 - **Runtime:** Node.js (>= 20.0.0)
