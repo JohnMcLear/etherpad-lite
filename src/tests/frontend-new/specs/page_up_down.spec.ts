@@ -92,16 +92,24 @@ test.describe('Page Up / Page Down', function () {
     const padBody = await getPadBody(page);
     await clearPadContent(page);
 
-    // Build a pad with 10 very long lines interspersed with short ones.
-    // Each long line wraps many times so a single logical line is taller than
-    // the viewport.
-    const longLine = 'word '.repeat(500);
-    for (let i = 0; i < 10; i++) {
-      await writeToPad(page, longLine);
-      await page.keyboard.press('Enter');
-      await writeToPad(page, `short ${i}`);
-      await page.keyboard.press('Enter');
-    }
+    // Build a pad with long lines interspersed with short ones via the inner
+    // document directly to avoid slow keyboard.type on Firefox.
+    const longLine = 'word '.repeat(300);
+    const innerFrame = page.frame('ace_inner')!;
+    await innerFrame.evaluate((text: string) => {
+      const body = document.getElementById('innerdocbody')!;
+      body.innerHTML = '';
+      for (let i = 0; i < 6; i++) {
+        const longDiv = document.createElement('div');
+        longDiv.textContent = text;
+        body.appendChild(longDiv);
+        const shortDiv = document.createElement('div');
+        shortDiv.textContent = `short ${i}`;
+        body.appendChild(shortDiv);
+      }
+    }, longLine);
+    // Wait for Etherpad to process the DOM changes
+    await page.waitForTimeout(2000);
 
     // Move caret to the very top
     await page.keyboard.down('Control');
