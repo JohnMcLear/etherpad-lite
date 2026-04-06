@@ -117,6 +117,58 @@ test.describe('Page Up / Page Down', function () {
     expect(scrollAfter).toBeGreaterThan(scrollBefore);
   });
 
+  // Regression test for #4562: consecutive very long wrapped lines should not
+  // cause PageDown/PageUp to skip too many or too few logical lines.  The
+  // pixel-based calculation must account for lines that occupy far more visual
+  // rows than the viewport height.
+  test('PageDown with consecutive long wrapped lines moves by correct amount (#4562)', async function ({page}) {
+    const padBody = await getPadBody(page);
+    await clearPadContent(page);
+
+    // Build a pad with 10 very long lines interspersed with short ones.
+    // Each long line wraps many times so a single logical line is taller than
+    // the viewport.
+    const longLine = 'word '.repeat(500);
+    for (let i = 0; i < 10; i++) {
+      await writeToPad(page, longLine);
+      await page.keyboard.press('Enter');
+      await writeToPad(page, `short ${i}`);
+      await page.keyboard.press('Enter');
+    }
+
+    // Move caret to the very top
+    await page.keyboard.down('Control');
+    await page.keyboard.press('Home');
+    await page.keyboard.up('Control');
+    await page.waitForTimeout(200);
+
+    // Press PageDown twice and verify caret advances each time
+    const getCaretLine = async () => {
+      const innerFrame = page.frame('ace_inner')!;
+      return innerFrame.evaluate(() => {
+        const sel = document.getSelection();
+        if (!sel || !sel.focusNode) return -1;
+        let node = sel.focusNode as HTMLElement;
+        while (node && node.tagName !== 'DIV') node = node.parentElement!;
+        if (!node) return -1;
+        const divs = Array.from(document.getElementById('innerdocbody')!.children);
+        return divs.indexOf(node);
+      });
+    };
+
+    const lineBefore = await getCaretLine();
+
+    await page.keyboard.press('PageDown');
+    await page.waitForTimeout(1000);
+    const lineAfterFirst = await getCaretLine();
+    expect(lineAfterFirst).toBeGreaterThan(lineBefore);
+
+    await page.keyboard.press('PageDown');
+    await page.waitForTimeout(1000);
+    const lineAfterSecond = await getCaretLine();
+    expect(lineAfterSecond).toBeGreaterThan(lineAfterFirst);
+  });
+
   test('PageDown then PageUp returns to approximately same position', async function ({page}) {
     const padBody = await getPadBody(page);
     await clearPadContent(page);
