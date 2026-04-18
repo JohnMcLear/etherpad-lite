@@ -2880,7 +2880,10 @@ function Ace2Inner(editorInfo, cssManagers) {
                 totalPixelHeight += entry.lineNode.offsetHeight;
               }
             }
-            const visibleLogicalLines = visibleEnd - visibleStart;
+            // scroll.getVisibleLineRange() returns an inclusive end index, so the
+            // number of visible logical lines is (end - start + 1), matching the
+            // iteration bounds used to sum totalPixelHeight above.
+            const visibleLogicalLines = visibleEnd - visibleStart + 1;
             // Use pixel-based count: how many logical lines fit in one viewport
             const numberOfLinesInViewport = visibleLogicalLines > 0 && totalPixelHeight > 0
                 ? Math.max(1, Math.round(visibleLogicalLines * viewportHeight / totalPixelHeight))
