@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "gen:api": "node scripts/gen-api.mjs",
+    "build": "pnpm gen:api && tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "build-copy": "tsc && vite build --outDir ../src/templates/admin --emptyOutDir",
+    "build-copy": "pnpm gen:api && tsc && vite build --outDir ../src/templates/admin --emptyOutDir",
     "preview": "vite preview"
   },
   "dependencies": {
