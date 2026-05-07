@@ -6,6 +6,7 @@
 import createClient from 'openapi-fetch';
 import createQueryHooks from 'openapi-react-query';
 import type { paths } from './schema';
+import { API_BASE_URL } from './version';
 
-export const fetchClient = createClient<paths>({ baseUrl: '/' });
+export const fetchClient = createClient<paths>({ baseUrl: API_BASE_URL });
 export const $api = createQueryHooks(fetchClient);

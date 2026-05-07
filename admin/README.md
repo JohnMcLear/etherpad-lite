@@ -34,8 +34,10 @@ pnpm --filter admin gen:api
 This runs `admin/scripts/gen-api.mjs`, which loads
 `src/node/hooks/express/openapi.ts`, calls `generateDefinitionForVersion` for
 the latest API version, pipes the JSON through `openapi-typescript`, and
-writes the result to `admin/src/api/schema.d.ts`. The generated file is
-checked in.
+writes the result to `admin/src/api/schema.d.ts`. The latest API version
+read from the spec is also emitted to `admin/src/api/version.ts` so
+`client.ts` can build the right `/api/<version>/` baseUrl. Both generated
+files are checked in.
 
 Run `gen:api` after any change to:
 

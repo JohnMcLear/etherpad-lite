@@ -43,7 +43,26 @@ try {
   const body = readFileSync(outFile, 'utf8');
   writeFileSync(outFile, header + body, 'utf8');
 
+  // Emit a runtime-side version constant so client.ts can build the right
+  // baseUrl. Generated paths are unprefixed (e.g. "/createGroup"), but the
+  // backend mounts the FLAT-style spec under /api/<version>/.
+  const spec = JSON.parse(readFileSync(specPath, 'utf8'));
+  const apiVersion = spec?.info?.version;
+  if (typeof apiVersion !== 'string' || apiVersion.length === 0) {
+    console.error('OpenAPI spec is missing info.version; cannot emit version.ts');
+    process.exit(1);
+  }
+  const versionFile = path.join(adminRoot, 'src', 'api', 'version.ts');
+  writeFileSync(
+    versionFile,
+    header +
+      `export const LATEST_API_VERSION = ${JSON.stringify(apiVersion)};\n` +
+      `export const API_BASE_URL = \`/api/\${LATEST_API_VERSION}\`;\n`,
+    'utf8',
+  );
+
   console.log(`Wrote ${path.relative(process.cwd(), outFile)}`);
+  console.log(`Wrote ${path.relative(process.cwd(), versionFile)}`);
 } finally {
   rmSync(tmpDir, { recursive: true, force: true });
 }
