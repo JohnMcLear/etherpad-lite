@@ -16,11 +16,21 @@ const outFile = path.join(adminRoot, 'src', 'api', 'schema.d.ts');
 const tmpDir = mkdtempSync(path.join(tmpdir(), 'etherpad-openapi-'));
 const specPath = path.join(tmpDir, 'spec.json');
 
+// On Windows pnpm resolves to pnpm.cmd, which spawnSync can only find via a
+// shell. Use shell on Windows only to avoid Node's DEP0190 warning elsewhere.
+// Every argument here is fixed (no user input) so the shell:true variant is
+// not an injection risk.
+const spawnOpts = {
+  cwd: adminRoot,
+  stdio: 'inherit',
+  shell: process.platform === 'win32',
+};
+
 try {
   const dump = spawnSync(
     'pnpm',
     ['exec', 'tsx', 'scripts/dump-spec.ts', specPath],
-    { cwd: adminRoot, stdio: 'inherit' },
+    spawnOpts,
   );
   if (dump.status !== 0) {
     console.error(`dump-spec.ts failed with exit code ${dump.status}`);
@@ -30,7 +40,7 @@ try {
   const gen = spawnSync(
     'pnpm',
     ['exec', 'openapi-typescript', specPath, '-o', outFile],
-    { cwd: adminRoot, stdio: 'inherit' },
+    spawnOpts,
   );
   if (gen.status !== 0) {
     console.error(`openapi-typescript failed with exit code ${gen.status}`);
