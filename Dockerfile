@@ -165,7 +165,10 @@ ENV ETHERPAD_PRODUCTION=true
 # The full pnpm-workspace.yaml references admin, doc, ui which are not
 # needed at runtime. Overwrite it with a production-only version so
 # pnpm install doesn't warn about missing workspace directories.
-RUN printf 'packages:\n  - src\n  - bin\n' > pnpm-workspace.yaml
+# Preserve strictDepBuilds=false from the source workspace yaml so transitive
+# postinstall-script deps (e.g. esbuild via tsx, @scarf/scarf via swagger-ui)
+# don't fail the production install with ERR_PNPM_IGNORED_BUILDS.
+RUN printf 'packages:\n  - src\n  - bin\nignoredBuiltDependencies:\n  - "@scarf/scarf"\nstrictDepBuilds: false\n' > pnpm-workspace.yaml
 
 COPY --chown=etherpad:etherpad ./src ./src
 COPY --chown=etherpad:etherpad --from=adminbuild /opt/etherpad-lite/src/templates/admin ./src/templates/admin
